@@ -1,0 +1,17 @@
+#!/bin/bash
+cd temp
+echo machine 173.201.216.21 >~/.netrc
+echo login sbmadmin >>~/.netrc
+echo password S3attleBandMap >>~/.netrc
+echo macdef init >>~/.netrc
+echo cd golf/images >>~/.netrc
+
+file=map.svg
+echo put $file >>~/.netrc
+
+echo quit >>~/.netrc
+echo >>~/.netrc
+
+chmod 600 ~/.netrc
+ftp -i 173.201.216.21
+rm ~/.netrc
