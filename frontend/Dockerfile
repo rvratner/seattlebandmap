@@ -26,4 +26,4 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Railway sets PORT dynamically - use envsubst to inject it
 EXPOSE 3000
 
-CMD sh -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf.tmp && mv /etc/nginx/conf.d/default.conf.tmp /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+CMD sh -c "export PORT=${PORT:-8080} && envsubst '\$PORT' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf.tmp && mv /etc/nginx/conf.d/default.conf.tmp /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
