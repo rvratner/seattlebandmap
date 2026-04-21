@@ -22,6 +22,11 @@ class Band(Base):
     name = Column(String, unique=True, index=True)
     description = Column(String, nullable=True)
     click_count = Column(Integer, default=0)
+    website = Column(String, nullable=True)
+    bandcamp_url = Column(String, nullable=True)
+    spotify_url = Column(String, nullable=True)
+    instagram_url = Column(String, nullable=True)
+    members = Column(String, nullable=True)
     last_updated = Column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )

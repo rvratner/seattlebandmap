@@ -33,6 +33,11 @@ class BandUpdate(BaseModel):
     name: str | None = None
     description: str | None = None
     location: str | None = None
+    website: str | None = None
+    bandcamp_url: str | None = None
+    spotify_url: str | None = None
+    instagram_url: str | None = None
+    members: str | None = None
 
 
 class ConnectionCreate(BaseModel):
@@ -159,6 +164,21 @@ async def update_band(
         if band_data.location is not None:
             band.description = f"Location: {band_data.location}"  # type: ignore
 
+        if band_data.website is not None:
+            band.website = band_data.website  # type: ignore
+
+        if band_data.bandcamp_url is not None:
+            band.bandcamp_url = band_data.bandcamp_url  # type: ignore
+
+        if band_data.spotify_url is not None:
+            band.spotify_url = band_data.spotify_url  # type: ignore
+
+        if band_data.instagram_url is not None:
+            band.instagram_url = band_data.instagram_url  # type: ignore
+
+        if band_data.members is not None:
+            band.members = band_data.members  # type: ignore
+
         band.last_updated = datetime.now()  # type: ignore
         db.commit()
 
@@ -169,6 +189,11 @@ async def update_band(
                 "name": band.name,
                 "description": band.description,
                 "click_count": band.click_count,
+                "website": band.website,
+                "bandcamp_url": band.bandcamp_url,
+                "spotify_url": band.spotify_url,
+                "instagram_url": band.instagram_url,
+                "members": band.members,
                 "last_updated": band.last_updated.isoformat()
                 if band.last_updated
                 else None,
@@ -598,6 +623,11 @@ async def get_band(band_id: int, db: Session = Depends(get_db)) -> dict:
             "click_count": band.click_count,
             "connections": len(connected_bands),
             "connected_bands": connected_bands,
+            "website": band.website,
+            "bandcamp_url": band.bandcamp_url,
+            "spotify_url": band.spotify_url,
+            "instagram_url": band.instagram_url,
+            "members": band.members,
             "last_updated": band.last_updated.isoformat()
             if band.last_updated
             else None,

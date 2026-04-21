@@ -14,6 +14,11 @@ interface Band {
 	connections: number
 	last_updated?: string
 	connected_bands?: ConnectedBand[]
+	website?: string
+	bandcamp_url?: string
+	spotify_url?: string
+	instagram_url?: string
+	members?: string
 }
 
 interface ConnectedBand {
@@ -401,6 +406,13 @@ function App() {
 				onDeleteBand={handleBandDelete}
 				onDeleteConnection={handleConnectionDelete}
 				onConnectedBandClick={handleConnectedBandClick}
+				onBandUpdated={async () => {
+					if (selectedBand) {
+						const res = await fetch(`${apiUrl}/api/bands/${selectedBand.id}`)
+						if (res.ok) setSelectedBand(await res.json())
+					}
+					fetchData()
+				}}
 			/>
 
 			<SubmissionForm

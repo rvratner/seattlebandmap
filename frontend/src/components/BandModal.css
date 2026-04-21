@@ -74,6 +74,35 @@
 	text-shadow: 0 0 30px rgba(255, 45, 85, 0.3);
 }
 
+.modal-header-actions {
+	display: flex;
+	gap: 0.5rem;
+	flex-shrink: 0;
+}
+
+.edit-band-button {
+	background: transparent;
+	border: 1px solid var(--neon-blue);
+	color: var(--neon-blue);
+	padding: 0.4rem 0.8rem;
+	border-radius: 2px;
+	font-size: 0.7rem;
+	font-family: var(--font-body);
+	font-weight: 700;
+	cursor: pointer;
+	transition: all 0.15s ease;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+}
+
+.edit-band-button:hover {
+	background: var(--neon-blue);
+	color: black;
+	border-color: var(--neon-blue);
+	box-shadow: var(--glow-blue);
+	transform: none;
+}
+
 .delete-band-button {
 	background: transparent;
 	border: 1px solid rgba(255, 45, 85, 0.3);
@@ -95,6 +124,25 @@
 	border-color: var(--neon-pink);
 	box-shadow: var(--glow-pink);
 	transform: none;
+}
+
+/* ===== EDIT MODE: NAME INPUT ===== */
+.edit-name-input {
+	background: var(--bg-deep);
+	border: 1px solid var(--neon-pink);
+	border-radius: 2px;
+	color: var(--neon-pink);
+	font-size: 1.6rem;
+	font-family: var(--font-display);
+	letter-spacing: 0.04em;
+	padding: 0.4rem 0.6rem;
+	width: 100%;
+	outline: none;
+	text-transform: uppercase;
+}
+
+.edit-name-input:focus {
+	box-shadow: 0 0 12px rgba(255, 45, 85, 0.2);
 }
 
 /* ===== MODAL BODY ===== */
@@ -153,12 +201,12 @@
 	color: var(--neon-pink);
 }
 
-/* ===== BAND DESCRIPTION ===== */
-.band-description {
-	margin-bottom: 2rem;
+/* ===== DETAIL SECTIONS ===== */
+.band-detail-section {
+	margin-bottom: 1.75rem;
 }
 
-.band-description h3 {
+.band-detail-section h3 {
 	margin: 0 0 0.75rem 0;
 	color: var(--neon-amber);
 	font-size: 1.2rem;
@@ -166,11 +214,198 @@
 	letter-spacing: 0.06em;
 }
 
-.band-description p {
+.detail-text {
 	margin: 0;
 	line-height: 1.6;
 	color: var(--text-muted);
 	font-size: 0.85rem;
+}
+
+.detail-text.empty {
+	color: var(--text-dim);
+	font-style: italic;
+}
+
+/* ===== EDIT TEXTAREA ===== */
+.edit-textarea {
+	background: var(--bg-deep);
+	border: 1px solid var(--border-medium);
+	border-radius: 2px;
+	color: var(--text-primary);
+	font-size: 0.85rem;
+	font-family: var(--font-body);
+	padding: 0.6rem 0.75rem;
+	width: 100%;
+	resize: vertical;
+	outline: none;
+	transition: border-color 0.15s ease;
+}
+
+.edit-textarea:focus {
+	border-color: var(--neon-blue);
+	box-shadow: 0 0 12px rgba(0, 212, 255, 0.1);
+}
+
+/* ===== MEMBERS ===== */
+.members-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+}
+
+.member-tag {
+	background: var(--bg-deep);
+	border: 1px solid var(--border-medium);
+	border-radius: 2px;
+	padding: 0.3rem 0.6rem;
+	font-size: 0.8rem;
+	color: var(--text-primary);
+	font-family: var(--font-body);
+}
+
+/* ===== LINKS ===== */
+.links-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.link-button {
+	display: inline-block;
+	background: transparent;
+	border: 1px solid var(--border-medium);
+	border-radius: 2px;
+	padding: 0.4rem 0.85rem;
+	font-size: 0.75rem;
+	font-family: var(--font-body);
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var(--text-muted);
+	text-decoration: none;
+	transition: all 0.15s ease;
+}
+
+.link-button:hover {
+	color: var(--neon-blue);
+	border-color: var(--neon-blue);
+	box-shadow: var(--glow-blue);
+}
+
+.link-bandcamp:hover {
+	color: var(--neon-blue);
+	border-color: var(--neon-blue);
+}
+
+.link-spotify:hover {
+	color: var(--neon-green);
+	border-color: var(--neon-green);
+	box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+}
+
+.link-instagram:hover {
+	color: var(--neon-pink);
+	border-color: var(--neon-pink);
+	box-shadow: var(--glow-pink);
+}
+
+/* ===== EDIT LINKS GRID ===== */
+.edit-links-grid {
+	display: grid;
+	gap: 0.6rem;
+}
+
+.edit-link-row {
+	display: grid;
+	grid-template-columns: 90px 1fr;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+.edit-link-row label {
+	font-size: 0.7rem;
+	font-family: var(--font-body);
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var(--text-muted);
+}
+
+.edit-link-row input {
+	background: var(--bg-deep);
+	border: 1px solid var(--border-medium);
+	border-radius: 2px;
+	color: var(--text-primary);
+	font-size: 0.8rem;
+	font-family: var(--font-body);
+	padding: 0.5rem 0.65rem;
+	outline: none;
+	transition: border-color 0.15s ease;
+}
+
+.edit-link-row input:focus {
+	border-color: var(--neon-blue);
+	box-shadow: 0 0 12px rgba(0, 212, 255, 0.1);
+}
+
+.edit-link-row input::placeholder {
+	color: var(--text-dim);
+	font-size: 0.75rem;
+}
+
+/* ===== EDIT ACTIONS ===== */
+.edit-actions {
+	display: flex;
+	gap: 0.6rem;
+	justify-content: flex-end;
+	margin-bottom: 2rem;
+	padding-top: 0.5rem;
+}
+
+.btn-save {
+	background: var(--neon-pink);
+	color: black;
+	border: 1px solid var(--neon-pink);
+	padding: 0.5rem 1.2rem;
+	border-radius: 2px;
+	font-size: 0.75rem;
+	font-family: var(--font-body);
+	font-weight: 700;
+	cursor: pointer;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	transition: all 0.15s ease;
+}
+
+.btn-save:hover:not(:disabled) {
+	box-shadow: var(--glow-pink);
+}
+
+.btn-save:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+.btn-cancel {
+	background: transparent;
+	color: var(--text-muted);
+	border: 1px solid var(--border-medium);
+	padding: 0.5rem 1.2rem;
+	border-radius: 2px;
+	font-size: 0.75rem;
+	font-family: var(--font-body);
+	font-weight: 700;
+	cursor: pointer;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	transition: all 0.15s ease;
+}
+
+.btn-cancel:hover {
+	border-color: var(--text-muted);
+	color: var(--text-primary);
+	box-shadow: none;
+	transform: none;
 }
 
 /* ===== CONNECTED BANDS ===== */
