@@ -160,8 +160,10 @@ def main() -> None:
 
     try:
         # Paths to CSV files
-        bands_csv = os.path.join("/app", "old", "db", "band.csv")
-        connections_csv = os.path.join("/app", "old", "db", "connnections.csv")
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        repo_root = os.path.dirname(script_dir)
+        bands_csv = os.path.join(repo_root, "old", "db", "band.csv")
+        connections_csv = os.path.join(repo_root, "old", "db", "connnections.csv")
 
         # Check if files exist
         if not os.path.exists(bands_csv):

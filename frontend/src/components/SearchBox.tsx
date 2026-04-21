@@ -66,16 +66,32 @@ const SearchBox: React.FC<SearchBoxProps> = ({ onBandSelect, apiUrl }) => {
 		<div className="search-box" ref={searchRef} style={{ position: 'relative', width: '300px' }}>
 			<input
 				type="text"
-				placeholder="Search for bands..."
+				placeholder="SEARCH BANDS..."
 				value={query}
 				onChange={(e) => setQuery(e.target.value)}
 				onFocus={() => setShowResults(true)}
 				style={{
 					width: '100%',
 					padding: '8px 12px',
-					border: '1px solid #ccc',
-					borderRadius: '4px',
-					fontSize: '14px'
+					background: '#0a0a0a',
+					border: '1px solid #2a2a2a',
+					borderRadius: '2px',
+					fontSize: '12px',
+					fontFamily: "'Space Mono', monospace",
+					fontWeight: 700,
+					color: '#e0e0e0',
+					letterSpacing: '0.06em',
+					textTransform: 'uppercase',
+					transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+					outline: 'none',
+				}}
+				onFocusCapture={(e) => {
+					e.currentTarget.style.borderColor = '#00d4ff'
+					e.currentTarget.style.boxShadow = '0 0 12px rgba(0,212,255,0.15)'
+				}}
+				onBlurCapture={(e) => {
+					e.currentTarget.style.borderColor = '#2a2a2a'
+					e.currentTarget.style.boxShadow = 'none'
 				}}
 			/>
 
@@ -85,16 +101,25 @@ const SearchBox: React.FC<SearchBoxProps> = ({ onBandSelect, apiUrl }) => {
 					top: '100%',
 					left: 0,
 					right: 0,
-					backgroundColor: 'white',
-					border: '1px solid #ccc',
-					borderRadius: '4px',
-					boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+					backgroundColor: '#111111',
+					border: '1px solid #2a2a2a',
+					borderTop: 'none',
+					borderRadius: '0 0 2px 2px',
+					boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
 					zIndex: 1000,
 					maxHeight: '300px',
-					overflowY: 'auto'
+					overflowY: 'auto',
 				}}>
 					{isLoading ? (
-						<div style={{ padding: '12px', textAlign: 'center', color: '#666' }}>
+						<div style={{
+							padding: '12px',
+							textAlign: 'center',
+							color: '#666',
+							fontSize: '11px',
+							fontFamily: "'Space Mono', monospace",
+							letterSpacing: '0.06em',
+							textTransform: 'uppercase',
+						}}>
 							Searching...
 						</div>
 					) : results.length > 0 ? (
@@ -105,26 +130,47 @@ const SearchBox: React.FC<SearchBoxProps> = ({ onBandSelect, apiUrl }) => {
 								style={{
 									padding: '8px 12px',
 									cursor: 'pointer',
-									borderBottom: '1px solid #eee',
+									borderBottom: '1px solid #1a1a1a',
 									display: 'flex',
 									justifyContent: 'space-between',
-									alignItems: 'center'
+									alignItems: 'center',
+									transition: 'all 0.1s ease',
+									fontSize: '12px',
+									fontFamily: "'Space Mono', monospace",
 								}}
 								onMouseEnter={(e) => {
-									e.currentTarget.style.backgroundColor = '#f5f5f5'
+									e.currentTarget.style.backgroundColor = '#1a1a1a'
+									e.currentTarget.style.borderLeftColor = '#ff2d55'
+									const nameSpan = e.currentTarget.querySelector('.result-name') as HTMLElement
+									if (nameSpan) nameSpan.style.color = '#ff2d55'
 								}}
 								onMouseLeave={(e) => {
-									e.currentTarget.style.backgroundColor = 'white'
+									e.currentTarget.style.backgroundColor = 'transparent'
+									e.currentTarget.style.borderLeftColor = 'transparent'
+									const nameSpan = e.currentTarget.querySelector('.result-name') as HTMLElement
+									if (nameSpan) nameSpan.style.color = '#e0e0e0'
 								}}
 							>
-								<span style={{ fontWeight: 'bold' }}>{band.name}</span>
-								<span style={{ color: '#666', fontSize: '12px' }}>
-									{band.connections} connections
+								<span className="result-name" style={{ fontWeight: 700, color: '#e0e0e0', transition: 'color 0.1s' }}>{band.name}</span>
+								<span style={{
+									color: '#444',
+									fontSize: '10px',
+									letterSpacing: '0.04em',
+								}}>
+									{band.connections} conn
 								</span>
 							</div>
 						))
 					) : (
-						<div style={{ padding: '12px', textAlign: 'center', color: '#666' }}>
+						<div style={{
+							padding: '12px',
+							textAlign: 'center',
+							color: '#444',
+							fontSize: '11px',
+							fontFamily: "'Space Mono', monospace",
+							letterSpacing: '0.06em',
+							textTransform: 'uppercase',
+						}}>
 							No bands found
 						</div>
 					)}

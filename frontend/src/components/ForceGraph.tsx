@@ -22,21 +22,26 @@ interface ForceGraphProps {
 }
 
 const CONNECTION_COLORS: Record<string, string> = {
-	member_shared: '#e06c9f',
-	collaboration: '#6cb4ee',
-	side_project: '#f0a04b',
-	touring: '#82d982',
+	member_shared: '#ff2d55',
+	collaboration: '#00d4ff',
+	side_project: '#ff9500',
+	touring: '#39ff14',
 }
 
-const DEFAULT_LINK_COLOR = '#888'
+const DEFAULT_LINK_COLOR = '#333333'
 
 function getNodeColor(d: Band): string {
-	if (d.is_main) return '#ff6b6b'
-	return '#69b3a2'
+	if (d.is_main) return '#ff2d55'
+	return '#00d4ff'
+}
+
+function getNodeGlowFilter(d: Band): string {
+	if (d.is_main) return 'url(#glow-pink)'
+	return 'url(#glow-blue)'
 }
 
 function getNodeRadius(d: Band): number {
-	return Math.max(5, Math.min(25, 3 + d.connections * 1.5))
+	return Math.max(4, Math.min(22, 3 + d.connections * 1.5))
 }
 
 const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick, onReset }) => {
@@ -58,6 +63,36 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 			.attr('width', width)
 			.attr('height', height)
 			.attr('viewBox', `0 0 ${width} ${height}`)
+
+		// ===== SVG DEFS: Glow filters =====
+		const defs = svg.append('defs')
+
+		// Pink glow
+		const glowPink = defs.append('filter').attr('id', 'glow-pink').attr('x', '-50%').attr('y', '-50%').attr('width', '200%').attr('height', '200%')
+		glowPink.append('feGaussianBlur').attr('stdDeviation', '4').attr('result', 'blur')
+		glowPink.append('feFlood').attr('flood-color', '#ff2d55').attr('flood-opacity', '0.6').attr('result', 'color')
+		glowPink.append('feComposite').attr('in', 'color').attr('in2', 'blur').attr('operator', 'in').attr('result', 'glow')
+		const glowPinkMerge = glowPink.append('feMerge')
+		glowPinkMerge.append('feMergeNode').attr('in', 'glow')
+		glowPinkMerge.append('feMergeNode').attr('in', 'SourceGraphic')
+
+		// Blue glow
+		const glowBlue = defs.append('filter').attr('id', 'glow-blue').attr('x', '-50%').attr('y', '-50%').attr('width', '200%').attr('height', '200%')
+		glowBlue.append('feGaussianBlur').attr('stdDeviation', '3').attr('result', 'blur')
+		glowBlue.append('feFlood').attr('flood-color', '#00d4ff').attr('flood-opacity', '0.5').attr('result', 'color')
+		glowBlue.append('feComposite').attr('in', 'color').attr('in2', 'blur').attr('operator', 'in').attr('result', 'glow')
+		const glowBlueMerge = glowBlue.append('feMerge')
+		glowBlueMerge.append('feMergeNode').attr('in', 'glow')
+		glowBlueMerge.append('feMergeNode').attr('in', 'SourceGraphic')
+
+		// Amber glow (for hover)
+		const glowAmber = defs.append('filter').attr('id', 'glow-amber').attr('x', '-50%').attr('y', '-50%').attr('width', '200%').attr('height', '200%')
+		glowAmber.append('feGaussianBlur').attr('stdDeviation', '5').attr('result', 'blur')
+		glowAmber.append('feFlood').attr('flood-color', '#ff9500').attr('flood-opacity', '0.7').attr('result', 'color')
+		glowAmber.append('feComposite').attr('in', 'color').attr('in2', 'blur').attr('operator', 'in').attr('result', 'glow')
+		const glowAmberMerge = glowAmber.append('feMerge')
+		glowAmberMerge.append('feMergeNode').attr('in', 'glow')
+		glowAmberMerge.append('feMergeNode').attr('in', 'SourceGraphic')
 
 		// Zoom behavior
 		const zoom = d3.zoom<SVGSVGElement, unknown>()
@@ -90,8 +125,8 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 			.data(connections)
 			.enter().append('line')
 			.attr('stroke', d => CONNECTION_COLORS[d.connection_type || ''] || DEFAULT_LINK_COLOR)
-			.attr('stroke-opacity', 0.5)
-			.attr('stroke-width', 1.5)
+			.attr('stroke-opacity', 0.3)
+			.attr('stroke-width', 1)
 			.attr('stroke-dasharray', d => d.connection_type === 'touring' ? '4 2' : null)
 
 		// Nodes
@@ -102,8 +137,8 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 			.enter().append('circle')
 			.attr('r', d => getNodeRadius(d))
 			.attr('fill', d => getNodeColor(d))
-			.attr('stroke', '#fff')
-			.attr('stroke-width', d => d.is_main ? 3 : 1.5)
+			.attr('stroke', 'none')
+			.attr('filter', d => getNodeGlowFilter(d))
 			.style('cursor', 'pointer')
 
 		// Drag behavior
@@ -131,20 +166,20 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 		node
 			.on('mouseover', function (_event, d) {
 				d3.select(this)
-					.attr('fill', '#ffd93d')
-					.attr('stroke-width', 3)
+					.attr('fill', '#ff9500')
+					.attr('filter', 'url(#glow-amber)')
 
 				// Highlight connected links
 				link
 					.attr('stroke-opacity', l => {
 						const src = typeof l.source === 'object' ? l.source.id : l.source
 						const tgt = typeof l.target === 'object' ? l.target.id : l.target
-						return (src === d.id || tgt === d.id) ? 1 : 0.15
+						return (src === d.id || tgt === d.id) ? 0.8 : 0.06
 					})
 					.attr('stroke-width', l => {
 						const src = typeof l.source === 'object' ? l.source.id : l.source
 						const tgt = typeof l.target === 'object' ? l.target.id : l.target
-						return (src === d.id || tgt === d.id) ? 2.5 : 1
+						return (src === d.id || tgt === d.id) ? 2 : 0.5
 					})
 
 				// Dim other nodes
@@ -155,12 +190,12 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 						const tgt = typeof l.target === 'object' ? l.target.id : l.target
 						return (src === d.id && tgt === n.id) || (tgt === d.id && src === n.id)
 					})
-					return connected ? 1 : 0.25
+					return connected ? 1 : 0.15
 				})
 
 				tooltip
 					.style('display', 'block')
-					.html(`<strong>${d.name}</strong><br/>${d.connections} connections`)
+					.html(`<strong>${d.name}</strong><br/><span style="color:#ff9500">${d.connections} connections</span>`)
 			})
 			.on('mousemove', function (event) {
 				tooltip
@@ -168,15 +203,14 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 					.style('top', (event.pageY - 12) + 'px')
 			})
 			.on('mouseout', function (_event, d) {
-				// Restore original color (respects is_main)
 				d3.select(this)
 					.attr('fill', getNodeColor(d))
-					.attr('stroke-width', d.is_main ? 3 : 1.5)
+					.attr('filter', getNodeGlowFilter(d))
 
 				// Restore links
 				link
-					.attr('stroke-opacity', 0.5)
-					.attr('stroke-width', 1.5)
+					.attr('stroke-opacity', 0.3)
+					.attr('stroke-width', 1)
 
 				// Restore nodes
 				node.attr('opacity', 1)
@@ -194,13 +228,16 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 			.data(bands)
 			.enter().append('text')
 			.text(d => d.name)
-			.attr('font-size', d => d.is_main ? '13px' : '11px')
+			.attr('font-size', d => d.is_main ? '12px' : '10px')
 			.attr('font-weight', d => d.is_main ? 'bold' : 'normal')
-			.attr('fill', 'white')
+			.attr('font-family', "'Space Mono', monospace")
+			.attr('fill', d => d.is_main ? '#ff2d55' : '#888')
 			.attr('text-anchor', 'middle')
 			.attr('dy', d => -(getNodeRadius(d) + 6))
 			.style('pointer-events', 'none')
-			.style('text-shadow', '1px 1px 2px rgba(0,0,0,0.8), -1px -1px 2px rgba(0,0,0,0.8)')
+			.style('text-transform', 'uppercase')
+			.style('letter-spacing', '0.04em')
+			.style('text-shadow', '0 0 8px rgba(0,0,0,0.9), 0 0 16px rgba(0,0,0,0.7)')
 			.style('opacity', d => (d.is_main || d.connections >= labelThreshold) ? 1 : 0)
 
 		// Tick
@@ -251,15 +288,31 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 					onClick={onReset}
 					style={{
 						position: 'absolute',
-						top: '10px',
-						right: '10px',
+						top: '12px',
+						right: '12px',
 						zIndex: 10,
-						padding: '8px 16px',
-						backgroundColor: '#fff',
-						border: '1px solid #ccc',
-						borderRadius: '4px',
+						padding: '6px 14px',
+						backgroundColor: 'transparent',
+						border: '1px solid #ff2d55',
+						borderRadius: '2px',
 						cursor: 'pointer',
-						fontSize: '14px'
+						fontSize: '11px',
+						fontFamily: "'Space Mono', monospace",
+						fontWeight: 700,
+						color: '#ff2d55',
+						textTransform: 'uppercase' as const,
+						letterSpacing: '0.06em',
+						transition: 'all 0.15s ease',
+					}}
+					onMouseEnter={e => {
+						e.currentTarget.style.backgroundColor = '#ff2d55'
+						e.currentTarget.style.color = '#000'
+						e.currentTarget.style.boxShadow = '0 0 20px rgba(255,45,85,0.4)'
+					}}
+					onMouseLeave={e => {
+						e.currentTarget.style.backgroundColor = 'transparent'
+						e.currentTarget.style.color = '#ff2d55'
+						e.currentTarget.style.boxShadow = 'none'
 					}}
 				>
 					Reset View
@@ -267,26 +320,30 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 			)}
 			<div className="graph-legend" style={{
 				position: 'absolute',
-				bottom: '10px',
-				left: '10px',
+				bottom: '12px',
+				left: '12px',
 				zIndex: 10,
-				background: 'rgba(0,0,0,0.6)',
-				padding: '8px 12px',
-				borderRadius: '6px',
-				fontSize: '11px',
-				lineHeight: '1.6'
+				background: 'rgba(5,5,5,0.85)',
+				border: '1px solid #1e1e1e',
+				padding: '10px 14px',
+				borderRadius: '2px',
+				fontSize: '10px',
+				lineHeight: '1.8',
+				fontFamily: "'Space Mono', monospace",
+				letterSpacing: '0.04em',
 			}}>
 				{Object.entries(CONNECTION_COLORS).map(([type, color]) => (
-					<div key={type} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+					<div key={type} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
 						<span style={{
 							width: '16px',
-							height: '3px',
-							background: color,
+							height: '2px',
+							background: type === 'touring' ? 'none' : color,
 							display: 'inline-block',
-							borderRadius: '2px',
-							...(type === 'touring' ? { borderTop: `2px dashed ${color}`, background: 'none' } : {})
+							borderRadius: '0',
+							boxShadow: `0 0 6px ${color}`,
+							...(type === 'touring' ? { borderTop: `2px dashed ${color}`, background: 'none', boxShadow: 'none' } : {})
 						}} />
-						<span style={{ color: '#ddd' }}>{type.replace('_', ' ')}</span>
+						<span style={{ color: '#666', textTransform: 'uppercase' }}>{type.replace('_', ' ')}</span>
 					</div>
 				))}
 			</div>
@@ -296,14 +353,17 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 				style={{
 					display: 'none',
 					position: 'fixed',
-					background: 'rgba(0, 0, 0, 0.85)',
-					color: 'white',
+					background: 'rgba(10, 10, 10, 0.95)',
+					border: '1px solid #222',
+					color: '#e0e0e0',
 					padding: '8px 12px',
-					borderRadius: '6px',
-					fontSize: '12px',
+					borderRadius: '2px',
+					fontSize: '11px',
+					fontFamily: "'Space Mono', monospace",
 					pointerEvents: 'none',
 					zIndex: 1000,
-					maxWidth: '200px'
+					maxWidth: '200px',
+					letterSpacing: '0.02em',
 				}}
 			/>
 		</div>

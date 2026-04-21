@@ -387,7 +387,7 @@ function App() {
 			</main>
 
 			<footer className="App-footer">
-				<p>Seattle Band Map - Modern Version | Data migrated from original project</p>
+				<p>&copy; {new Date().getFullYear()} Seattle Band Map</p>
 			</footer>
 
 			{/* Modals */}
