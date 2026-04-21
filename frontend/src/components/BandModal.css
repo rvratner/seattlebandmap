@@ -431,6 +431,12 @@
 	justify-content: space-between;
 	align-items: center;
 	transition: all 0.12s ease;
+	text-align: left;
+}
+
+.connected-band-item .connected-band-info {
+	flex: 1;
+	min-width: 0;
 }
 
 .connected-band-item:hover {
