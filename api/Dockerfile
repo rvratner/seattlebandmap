@@ -14,5 +14,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
-# Run the app - reads PORT from environment
-CMD ["python", "main.py"]
+# Run the app on Railway's expected port
+CMD sh -c "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}"
