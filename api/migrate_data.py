@@ -130,7 +130,7 @@ def migrate_connections(csv_path: str, session: Session) -> None:
                 connection = Connection(
                     band1_id=band1_id,
                     band2_id=band2_id,
-                    connection_type="collaboration",  # Default type
+                    connection_type="member_shared",  # Default type
                     description="Migrated from old database",
                 )
 

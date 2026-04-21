@@ -1,3 +1,4 @@
+import os
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from datetime import datetime
@@ -5,6 +6,7 @@ from datetime import datetime
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from database import Base, engine, get_db
@@ -63,9 +65,10 @@ app = FastAPI(
 )
 
 # Configure CORS
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://frontend:3000").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://frontend:3000"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -401,36 +404,51 @@ async def submit_connection(
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
 
+def _bands_with_counts(db: Session):
+    """Returns query of (Band, connection_count) using a single efficient join."""
+    # Count connections: a band appears as band1_id or band2_id
+    count_as_band1 = (
+        db.query(
+            Connection.band1_id.label("band_id"),
+            func.count().label("cnt"),
+        )
+        .group_by(Connection.band1_id)
+        .subquery()
+    )
+    count_as_band2 = (
+        db.query(
+            Connection.band2_id.label("band_id"),
+            func.count().label("cnt"),
+        )
+        .group_by(Connection.band2_id)
+        .subquery()
+    )
+
+    total_connections = func.coalesce(count_as_band1.c.cnt, 0) + func.coalesce(count_as_band2.c.cnt, 0)
+
+    return (
+        db.query(Band, total_connections.label("connection_count"))
+        .outerjoin(count_as_band1, Band.id == count_as_band1.c.band_id)
+        .outerjoin(count_as_band2, Band.id == count_as_band2.c.band_id)
+    )
+
+
 @app.get("/api/bands")
 async def get_bands(db: Session = Depends(get_db)) -> dict:
     """Get all bands with their connection counts"""
     try:
-        bands = db.query(Band).all()
-        result = []
-
-        for band in bands:
-            # Count connections for this band
-            connection_count = (
-                db.query(Connection)
-                .filter(
-                    (Connection.band1_id == band.id) | (Connection.band2_id == band.id)
-                )
-                .count()
-            )
-
-            result.append(
-                {
-                    "id": band.id,
-                    "name": band.name,
-                    "description": band.description,
-                    "click_count": band.click_count,
-                    "connections": connection_count,
-                    "last_updated": band.last_updated.isoformat()
-                    if band.last_updated
-                    else None,
-                }
-            )
-
+        rows = _bands_with_counts(db).all()
+        result = [
+            {
+                "id": band.id,
+                "name": band.name,
+                "description": band.description,
+                "click_count": band.click_count,
+                "connections": conn_count,
+                "last_updated": band.last_updated.isoformat() if band.last_updated else None,
+            }
+            for band, conn_count in rows
+        ]
         return {"bands": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
@@ -521,30 +539,21 @@ async def search_bands(db: Session = Depends(get_db), q: str = "") -> dict:
     try:
         if not q or len(q) < 2:
             return {"bands": []}
-            
-        bands = (
-            db.query(Band)
+
+        rows = (
+            _bands_with_counts(db)
             .filter(Band.name.ilike(f"%{q}%"))
             .limit(10)
             .all()
         )
-        
-        result = []
-        for band in bands:
-            connection_count = (
-                db.query(Connection)
-                .filter(
-                    (Connection.band1_id == band.id) | (Connection.band2_id == band.id)
-                )
-                .count()
-            )
-            
-            result.append({
+        result = [
+            {
                 "id": band.id,
                 "name": band.name,
-                "connections": connection_count,
-            })
-            
+                "connections": conn_count,
+            }
+            for band, conn_count in rows
+        ]
         return {"bands": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
@@ -621,30 +630,22 @@ async def get_band_network(band_id: int, db: Session = Depends(get_db)) -> dict:
             network_band_ids.add(conn.band1_id)
             network_band_ids.add(conn.band2_id)
 
-        # Get all bands in the network
-        network_bands = db.query(Band).filter(Band.id.in_(network_band_ids)).all()
-        
-        # Create nodes list with connection counts
-        nodes = []
-        for network_band in network_bands:
-            # Count total connections for this band
-            connection_count = (
-                db.query(Connection)
-                .filter(
-                    (Connection.band1_id == network_band.id) | (Connection.band2_id == network_band.id)
-                )
-                .count()
-            )
-            
-            # Check if this is the main band (for highlighting)
-            is_main = network_band.id == band_id
-            
-            nodes.append({
+        # Get all bands in the network with connection counts in one query
+        rows = (
+            _bands_with_counts(db)
+            .filter(Band.id.in_(network_band_ids))
+            .all()
+        )
+
+        nodes = [
+            {
                 "id": network_band.id,
                 "name": network_band.name,
-                "connections": connection_count,
-                "is_main": is_main,
-            })
+                "connections": conn_count,
+                "is_main": network_band.id == band_id,
+            }
+            for network_band, conn_count in rows
+        ]
 
         # Create links list
         links = []
@@ -674,29 +675,21 @@ async def get_band_network(band_id: int, db: Session = Depends(get_db)) -> dict:
 async def get_most_recent_bands(db: Session = Depends(get_db), limit: int = 6) -> dict:
     """Get most recently updated bands"""
     try:
-        bands = db.query(Band).order_by(Band.last_updated.desc()).limit(limit).all()
-        result = []
-
-        for band in bands:
-            connection_count = (
-                db.query(Connection)
-                .filter(
-                    (Connection.band1_id == band.id) | (Connection.band2_id == band.id)
-                )
-                .count()
-            )
-
-            result.append(
-                {
-                    "id": band.id,
-                    "name": band.name,
-                    "connections": connection_count,
-                    "last_updated": band.last_updated.isoformat()
-                    if band.last_updated
-                    else None,
-                }
-            )
-
+        rows = (
+            _bands_with_counts(db)
+            .order_by(Band.last_updated.desc())
+            .limit(limit)
+            .all()
+        )
+        result = [
+            {
+                "id": band.id,
+                "name": band.name,
+                "connections": conn_count,
+                "last_updated": band.last_updated.isoformat() if band.last_updated else None,
+            }
+            for band, conn_count in rows
+        ]
         return {"bands": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
@@ -708,30 +701,42 @@ async def get_most_connected_bands(
 ) -> dict:
     """Get bands with most connections"""
     try:
-        # This is a more complex query - for now, we'll get all bands and sort by connection count
-        bands = db.query(Band).all()
-        bands_with_connections = []
-
-        for band in bands:
-            connection_count = (
-                db.query(Connection)
-                .filter(
-                    (Connection.band1_id == band.id) | (Connection.band2_id == band.id)
-                )
-                .count()
+        # Build the query with explicit column for ordering
+        count_as_band1 = (
+            db.query(
+                Connection.band1_id.label("band_id"),
+                func.count().label("cnt"),
             )
-
-            bands_with_connections.append(
-                {
-                    "id": band.id,
-                    "name": band.name,
-                    "connections": connection_count,
-                }
+            .group_by(Connection.band1_id)
+            .subquery()
+        )
+        count_as_band2 = (
+            db.query(
+                Connection.band2_id.label("band_id"),
+                func.count().label("cnt"),
             )
+            .group_by(Connection.band2_id)
+            .subquery()
+        )
+        total = (func.coalesce(count_as_band1.c.cnt, 0) + func.coalesce(count_as_band2.c.cnt, 0)).label("connection_count")
 
-        # Sort by connection count and return top results
-        bands_with_connections.sort(key=lambda x: x["connections"], reverse=True)  # type: ignore
-        return {"bands": bands_with_connections[:limit]}
+        rows = (
+            db.query(Band, total)
+            .outerjoin(count_as_band1, Band.id == count_as_band1.c.band_id)
+            .outerjoin(count_as_band2, Band.id == count_as_band2.c.band_id)
+            .order_by(total.desc())
+            .limit(limit)
+            .all()
+        )
+        result = [
+            {
+                "id": band.id,
+                "name": band.name,
+                "connections": conn_count,
+            }
+            for band, conn_count in rows
+        ]
+        return {"bands": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
@@ -743,27 +748,21 @@ async def get_most_connected_bands(
 async def get_most_popular_bands(db: Session = Depends(get_db), limit: int = 6) -> dict:
     """Get most popular bands (by click count)"""
     try:
-        bands = db.query(Band).order_by(Band.click_count.desc()).limit(limit).all()
-        result = []
-
-        for band in bands:
-            connection_count = (
-                db.query(Connection)
-                .filter(
-                    (Connection.band1_id == band.id) | (Connection.band2_id == band.id)
-                )
-                .count()
-            )
-
-            result.append(
-                {
-                    "id": band.id,
-                    "name": band.name,
-                    "click_count": band.click_count,
-                    "connections": connection_count,
-                }
-            )
-
+        rows = (
+            _bands_with_counts(db)
+            .order_by(Band.click_count.desc())
+            .limit(limit)
+            .all()
+        )
+        result = [
+            {
+                "id": band.id,
+                "name": band.name,
+                "click_count": band.click_count,
+                "connections": conn_count,
+            }
+            for band, conn_count in rows
+        ]
         return {"bands": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
@@ -790,4 +789,5 @@ async def get_stats(db: Session = Depends(get_db)) -> dict:
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.getenv("PORT", "8000"))
+    uvicorn.run(app, host="0.0.0.0", port=port)

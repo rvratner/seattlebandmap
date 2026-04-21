@@ -8,39 +8,44 @@
 }
 
 .App-header {
-  padding: 2rem;
+  padding: 1.5rem 2rem;
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
-  position: relative;
 }
 
 .App-header h1 {
   margin: 0;
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: bold;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .App-header p {
-  margin: 0.5rem 0 0 0;
-  font-size: 1.2rem;
+  margin: 0.25rem 0 0 0;
+  font-size: 1.1rem;
   opacity: 0.9;
 }
 
+.header-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
 .submit-button {
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
   background: #ffd93d;
   color: #333;
   border: none;
-  padding: 0.75rem 1.5rem;
+  padding: 0.6rem 1.2rem;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
 }
 
 .submit-button:hover {
@@ -55,11 +60,11 @@
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .status-section,
 .bands-section,
-.tech-stack,
 .graph-section {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
@@ -71,7 +76,6 @@
 
 .status-section h2,
 .bands-section h2,
-.tech-stack h2,
 .graph-section h2 {
   margin-top: 0;
   font-size: 1.8rem;
@@ -126,46 +130,22 @@
 }
 
 .graph-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 600px;
   background: rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  padding: 1rem;
+  padding: 0;
 }
 
 .force-graph-container {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 100%;
+  min-height: 600px;
 }
 
 .force-graph-container svg {
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.05);
-}
-
-.node-info {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: rgba(0, 0, 0, 0.8);
-  padding: 1rem;
-  border-radius: 8px;
-  max-width: 200px;
-  z-index: 100;
-}
-
-.node-info h3 {
-  margin: 0 0 0.5rem 0;
-  color: #ffd93d;
-}
-
-.node-info p {
-  margin: 0;
-  font-size: 0.9rem;
+  display: block;
 }
 
 .stats-grid {
@@ -209,12 +189,16 @@
   margin-bottom: 0.5rem;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 
-.band-item:hover {
+.band-item.clickable {
+  cursor: pointer;
+}
+
+.band-item.clickable:hover {
   transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .band-info {
@@ -240,35 +224,6 @@
   font-weight: 500;
 }
 
-.tech-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-}
-
-.tech-item {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 1.5rem;
-  border-radius: 10px;
-  transition: transform 0.2s ease;
-}
-
-.tech-item:hover {
-  transform: translateY(-3px);
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.tech-item h3 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.3rem;
-  color: #ffd93d;
-}
-
-.tech-item p {
-  margin: 0;
-  opacity: 0.9;
-}
-
 .App-footer {
   padding: 1.5rem;
   background: rgba(0, 0, 0, 0.2);
@@ -283,48 +238,41 @@
 /* Responsive design */
 @media (max-width: 768px) {
   .App-header h1 {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
-  
+
   .App-header {
-    padding: 1.5rem;
+    padding: 1rem;
   }
-  
+
+  .header-actions {
+    flex-direction: column;
+  }
+
   .submit-button {
-    position: static;
-    margin-top: 1rem;
     width: 100%;
   }
-  
+
   .App-main {
     padding: 1rem;
   }
-  
-  .tech-grid {
-    grid-template-columns: 1fr;
-  }
-  
+
   .band-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .view-tabs {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .graph-container {
     min-height: 400px;
-  }
-  
-  .force-graph-container svg {
-    width: 100%;
-    height: auto;
   }
 }

@@ -23,6 +23,7 @@ interface BandModalProps {
 	onClose: () => void
 	onDeleteBand?: (bandId: number) => void
 	onDeleteConnection?: (connectionId: number) => void
+	onConnectedBandClick?: (bandId: number) => void
 }
 
 const BandModal: React.FC<BandModalProps> = ({
@@ -30,7 +31,8 @@ const BandModal: React.FC<BandModalProps> = ({
 	isOpen,
 	onClose,
 	onDeleteBand,
-	onDeleteConnection
+	onDeleteConnection,
+	onConnectedBandClick
 }) => {
 	if (!isOpen || !band) return null
 
@@ -53,7 +55,7 @@ const BandModal: React.FC<BandModalProps> = ({
 		<div className="modal-overlay" onClick={onClose}>
 			<div className="modal-content" onClick={(e) => e.stopPropagation()}>
 				<button className="modal-close" onClick={onClose}>
-					×
+					x
 				</button>
 
 				<div className="modal-header">
@@ -64,7 +66,7 @@ const BandModal: React.FC<BandModalProps> = ({
 							onClick={handleDeleteBand}
 							title="Delete this band and all its connections"
 						>
-							🗑️ Delete Band
+							Delete Band
 						</button>
 					)}
 				</div>
@@ -98,10 +100,16 @@ const BandModal: React.FC<BandModalProps> = ({
 							<div className="connected-bands-grid">
 								{band.connected_bands.map((connectedBand) => (
 									<div key={connectedBand.id} className="connected-band-item">
-										<div className="connected-band-info">
-											<span className="band-name">{connectedBand.name}</span>
+										<div
+											className="connected-band-info"
+											onClick={() => onConnectedBandClick?.(connectedBand.id)}
+											style={{ cursor: onConnectedBandClick ? 'pointer' : 'default' }}
+										>
+											<span className={`band-name ${onConnectedBandClick ? 'clickable-band' : ''}`}>
+												{connectedBand.name}
+											</span>
 											{connectedBand.connection_type && (
-												<span className="connection-type">{connectedBand.connection_type}</span>
+												<span className="connection-type">{connectedBand.connection_type.replace('_', ' ')}</span>
 											)}
 										</div>
 										{onDeleteConnection && (
@@ -110,7 +118,7 @@ const BandModal: React.FC<BandModalProps> = ({
 												onClick={() => onDeleteConnection(connectedBand.id)}
 												title="Delete this connection"
 											>
-												×
+												x
 											</button>
 										)}
 									</div>
