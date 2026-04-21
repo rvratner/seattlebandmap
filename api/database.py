@@ -10,6 +10,10 @@ DATABASE_URL = os.getenv(
     "DATABASE_URL", "postgresql://postgres:password@localhost:5432/seattlebandmap"
 )
 
+# Railway provides postgres:// but SQLAlchemy requires postgresql://
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
 # Create SQLAlchemy engine
 engine = create_engine(DATABASE_URL)
 
