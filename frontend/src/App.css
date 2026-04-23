@@ -57,10 +57,16 @@
 /* ===== HEADER ACTIONS ===== */
 .header-actions {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   gap: 1rem;
   margin-top: 1.25rem;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .submit-button {
@@ -174,9 +180,7 @@
 /* ===== VIEW TABS ===== */
 .view-tabs {
   display: flex;
-  justify-content: center;
   gap: 0;
-  margin-bottom: 2rem;
 }
 
 .tab-button {
@@ -385,6 +389,20 @@
 
   .header-actions {
     flex-direction: column;
+  }
+
+  .header-right {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .view-tabs {
+    width: 100%;
+  }
+
+  .tab-button {
+    flex: 1;
   }
 
   .submit-button {
