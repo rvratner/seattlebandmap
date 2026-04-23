@@ -22,22 +22,22 @@ interface ForceGraphProps {
 }
 
 const CONNECTION_COLORS: Record<string, string> = {
-	member_shared: '#ff2d55',
-	collaboration: '#00d4ff',
-	side_project: '#ff9500',
-	touring: '#39ff14',
+	member_shared: '#c9a84c',
+	collaboration: '#b5604a',
+	side_project: '#7a8c6e',
+	touring: '#d4a574',
 }
 
-const DEFAULT_LINK_COLOR = '#333333'
+const DEFAULT_LINK_COLOR = '#443f39'
 
 function getNodeColor(d: Band): string {
-	if (d.is_main) return '#ff2d55'
-	return '#00d4ff'
+	if (d.is_main) return '#c9a84c'
+	return '#e0d6c8'
 }
 
 function getNodeGlowFilter(d: Band): string {
-	if (d.is_main) return 'url(#glow-pink)'
-	return 'url(#glow-blue)'
+	if (d.is_main) return 'url(#glow-gold)'
+	return ''
 }
 
 function getNodeRadius(d: Band): number {
@@ -67,32 +67,23 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 		// ===== SVG DEFS: Glow filters =====
 		const defs = svg.append('defs')
 
-		// Pink glow
-		const glowPink = defs.append('filter').attr('id', 'glow-pink').attr('x', '-50%').attr('y', '-50%').attr('width', '200%').attr('height', '200%')
-		glowPink.append('feGaussianBlur').attr('stdDeviation', '4').attr('result', 'blur')
-		glowPink.append('feFlood').attr('flood-color', '#ff2d55').attr('flood-opacity', '0.6').attr('result', 'color')
-		glowPink.append('feComposite').attr('in', 'color').attr('in2', 'blur').attr('operator', 'in').attr('result', 'glow')
-		const glowPinkMerge = glowPink.append('feMerge')
-		glowPinkMerge.append('feMergeNode').attr('in', 'glow')
-		glowPinkMerge.append('feMergeNode').attr('in', 'SourceGraphic')
+		// Gold glow (for main/highlighted nodes)
+		const glowGold = defs.append('filter').attr('id', 'glow-gold').attr('x', '-50%').attr('y', '-50%').attr('width', '200%').attr('height', '200%')
+		glowGold.append('feGaussianBlur').attr('stdDeviation', '4').attr('result', 'blur')
+		glowGold.append('feFlood').attr('flood-color', '#c9a84c').attr('flood-opacity', '0.5').attr('result', 'color')
+		glowGold.append('feComposite').attr('in', 'color').attr('in2', 'blur').attr('operator', 'in').attr('result', 'glow')
+		const glowGoldMerge = glowGold.append('feMerge')
+		glowGoldMerge.append('feMergeNode').attr('in', 'glow')
+		glowGoldMerge.append('feMergeNode').attr('in', 'SourceGraphic')
 
-		// Blue glow
-		const glowBlue = defs.append('filter').attr('id', 'glow-blue').attr('x', '-50%').attr('y', '-50%').attr('width', '200%').attr('height', '200%')
-		glowBlue.append('feGaussianBlur').attr('stdDeviation', '3').attr('result', 'blur')
-		glowBlue.append('feFlood').attr('flood-color', '#00d4ff').attr('flood-opacity', '0.5').attr('result', 'color')
-		glowBlue.append('feComposite').attr('in', 'color').attr('in2', 'blur').attr('operator', 'in').attr('result', 'glow')
-		const glowBlueMerge = glowBlue.append('feMerge')
-		glowBlueMerge.append('feMergeNode').attr('in', 'glow')
-		glowBlueMerge.append('feMergeNode').attr('in', 'SourceGraphic')
-
-		// Amber glow (for hover)
-		const glowAmber = defs.append('filter').attr('id', 'glow-amber').attr('x', '-50%').attr('y', '-50%').attr('width', '200%').attr('height', '200%')
-		glowAmber.append('feGaussianBlur').attr('stdDeviation', '5').attr('result', 'blur')
-		glowAmber.append('feFlood').attr('flood-color', '#ff9500').attr('flood-opacity', '0.7').attr('result', 'color')
-		glowAmber.append('feComposite').attr('in', 'color').attr('in2', 'blur').attr('operator', 'in').attr('result', 'glow')
-		const glowAmberMerge = glowAmber.append('feMerge')
-		glowAmberMerge.append('feMergeNode').attr('in', 'glow')
-		glowAmberMerge.append('feMergeNode').attr('in', 'SourceGraphic')
+		// Rust glow (for hover)
+		const glowRust = defs.append('filter').attr('id', 'glow-rust').attr('x', '-50%').attr('y', '-50%').attr('width', '200%').attr('height', '200%')
+		glowRust.append('feGaussianBlur').attr('stdDeviation', '5').attr('result', 'blur')
+		glowRust.append('feFlood').attr('flood-color', '#b5604a').attr('flood-opacity', '0.6').attr('result', 'color')
+		glowRust.append('feComposite').attr('in', 'color').attr('in2', 'blur').attr('operator', 'in').attr('result', 'glow')
+		const glowRustMerge = glowRust.append('feMerge')
+		glowRustMerge.append('feMergeNode').attr('in', 'glow')
+		glowRustMerge.append('feMergeNode').attr('in', 'SourceGraphic')
 
 		// Zoom behavior
 		const zoom = d3.zoom<SVGSVGElement, unknown>()
@@ -125,7 +116,7 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 			.data(connections)
 			.enter().append('line')
 			.attr('stroke', d => CONNECTION_COLORS[d.connection_type || ''] || DEFAULT_LINK_COLOR)
-			.attr('stroke-opacity', 0.3)
+			.attr('stroke-opacity', 0.35)
 			.attr('stroke-width', 1)
 			.attr('stroke-dasharray', d => d.connection_type === 'touring' ? '4 2' : null)
 
@@ -166,8 +157,8 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 		node
 			.on('mouseover', function (_event, d) {
 				d3.select(this)
-					.attr('fill', '#ff9500')
-					.attr('filter', 'url(#glow-amber)')
+					.attr('fill', '#b5604a')
+					.attr('filter', 'url(#glow-rust)')
 
 				// Highlight connected links
 				link
@@ -195,7 +186,7 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 
 				tooltip
 					.style('display', 'block')
-					.html(`<strong>${d.name}</strong><br/><span style="color:#ff9500">${d.connections} connections</span>`)
+					.html(`<strong>${d.name}</strong><br/><span style="color:#c9a84c">${d.connections} connections</span>`)
 			})
 			.on('mousemove', function (event) {
 				tooltip
@@ -209,7 +200,7 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 
 				// Restore links
 				link
-					.attr('stroke-opacity', 0.3)
+					.attr('stroke-opacity', 0.35)
 					.attr('stroke-width', 1)
 
 				// Restore nodes
@@ -231,13 +222,13 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 			.attr('font-size', d => d.is_main ? '12px' : '10px')
 			.attr('font-weight', d => d.is_main ? 'bold' : 'normal')
 			.attr('font-family', "'Space Mono', monospace")
-			.attr('fill', d => d.is_main ? '#ff2d55' : '#888')
+			.attr('fill', d => d.is_main ? '#c9a84c' : '#918578')
 			.attr('text-anchor', 'middle')
 			.attr('dy', d => -(getNodeRadius(d) + 6))
 			.style('pointer-events', 'none')
 			.style('text-transform', 'uppercase')
 			.style('letter-spacing', '0.04em')
-			.style('text-shadow', '0 0 8px rgba(0,0,0,0.9), 0 0 16px rgba(0,0,0,0.7)')
+			.style('text-shadow', '0 0 8px rgba(26,23,20,0.9), 0 0 16px rgba(26,23,20,0.7)')
 			.style('opacity', d => (d.is_main || d.connections >= labelThreshold) ? 1 : 0)
 
 		// Tick
@@ -293,25 +284,25 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 						zIndex: 10,
 						padding: '6px 14px',
 						backgroundColor: 'transparent',
-						border: '1px solid #ff2d55',
+						border: '1px solid #c9a84c',
 						borderRadius: '2px',
 						cursor: 'pointer',
 						fontSize: '11px',
 						fontFamily: "'Space Mono', monospace",
 						fontWeight: 700,
-						color: '#ff2d55',
+						color: '#c9a84c',
 						textTransform: 'uppercase' as const,
 						letterSpacing: '0.06em',
 						transition: 'all 0.15s ease',
 					}}
 					onMouseEnter={e => {
-						e.currentTarget.style.backgroundColor = '#ff2d55'
-						e.currentTarget.style.color = '#000'
-						e.currentTarget.style.boxShadow = '0 0 20px rgba(255,45,85,0.4)'
+						e.currentTarget.style.backgroundColor = '#c9a84c'
+						e.currentTarget.style.color = '#1a1714'
+						e.currentTarget.style.boxShadow = '0 0 16px rgba(201,168,76,0.25)'
 					}}
 					onMouseLeave={e => {
 						e.currentTarget.style.backgroundColor = 'transparent'
-						e.currentTarget.style.color = '#ff2d55'
+						e.currentTarget.style.color = '#c9a84c'
 						e.currentTarget.style.boxShadow = 'none'
 					}}
 				>
@@ -323,8 +314,8 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 				bottom: '12px',
 				left: '12px',
 				zIndex: 10,
-				background: 'rgba(5,5,5,0.85)',
-				border: '1px solid #1e1e1e',
+				background: 'rgba(26,23,20,0.9)',
+				border: '1px solid #33302b',
 				padding: '10px 14px',
 				borderRadius: '2px',
 				fontSize: '10px',
@@ -340,10 +331,9 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 							background: type === 'touring' ? 'none' : color,
 							display: 'inline-block',
 							borderRadius: '0',
-							boxShadow: `0 0 6px ${color}`,
-							...(type === 'touring' ? { borderTop: `2px dashed ${color}`, background: 'none', boxShadow: 'none' } : {})
+							...(type === 'touring' ? { borderTop: `2px dashed ${color}`, background: 'none' } : {})
 						}} />
-						<span style={{ color: '#666', textTransform: 'uppercase' }}>{type.replace('_', ' ')}</span>
+						<span style={{ color: '#918578', textTransform: 'uppercase' }}>{type.replace('_', ' ')}</span>
 					</div>
 				))}
 			</div>
@@ -353,9 +343,9 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 				style={{
 					display: 'none',
 					position: 'fixed',
-					background: 'rgba(10, 10, 10, 0.95)',
-					border: '1px solid #222',
-					color: '#e0e0e0',
+					background: 'rgba(33, 30, 26, 0.95)',
+					border: '1px solid #443f39',
+					color: '#e0d6c8',
 					padding: '8px 12px',
 					borderRadius: '2px',
 					fontSize: '11px',

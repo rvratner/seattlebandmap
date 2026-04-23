@@ -286,6 +286,14 @@ function App() {
 				{activeTab === 'graph' && (
 					<div className="graph-section">
 						<h2>Band Network Graph</h2>
+						<div className="graph-container">
+							<ForceGraph
+								bands={graphData.nodes}
+								connections={graphData.links}
+								onNodeClick={handleNodeClick}
+								onReset={isNetworkView ? handleResetGraph : undefined}
+							/>
+						</div>
 						{isNetworkView ? (
 							<p className="graph-description">
 								Showing network for <strong>{selectedBandName}</strong> and all connected bands.
@@ -298,14 +306,6 @@ function App() {
 								Showing top {graphData.nodes.length} bands by connection count.
 							</p>
 						)}
-						<div className="graph-container">
-							<ForceGraph
-								bands={graphData.nodes}
-								connections={graphData.links}
-								onNodeClick={handleNodeClick}
-								onReset={isNetworkView ? handleResetGraph : undefined}
-							/>
-						</div>
 					</div>
 				)}
 

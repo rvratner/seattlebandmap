@@ -5,7 +5,7 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: rgba(0, 0, 0, 0.85);
+	background: rgba(10, 8, 6, 0.88);
 	backdrop-filter: blur(8px);
 	display: flex;
 	justify-content: center;
@@ -17,14 +17,14 @@
 .submission-content {
 	background: var(--bg-surface);
 	border: 1px solid var(--border-medium);
-	border-top: 2px solid var(--neon-blue);
+	border-top: 2px solid var(--accent-gold);
 	border-radius: 2px;
 	max-width: 700px;
 	width: 100%;
 	max-height: 90vh;
 	overflow-y: auto;
 	position: relative;
-	box-shadow: 0 0 60px rgba(0, 212, 255, 0.06);
+	box-shadow: 0 0 60px rgba(201, 168, 76, 0.06);
 }
 
 .submission-close {
@@ -48,10 +48,10 @@
 }
 
 .submission-close:hover {
-	background: var(--neon-blue);
-	color: black;
-	border-color: var(--neon-blue);
-	box-shadow: var(--glow-blue);
+	background: var(--accent-rust);
+	color: var(--bg-void);
+	border-color: var(--accent-rust);
+	box-shadow: var(--glow-rust);
 	transform: none;
 }
 
@@ -64,11 +64,11 @@
 
 .submission-header h2 {
 	margin: 0 0 0.25rem 0;
-	color: var(--neon-blue);
+	color: var(--accent-gold);
 	font-size: 1.8rem;
 	font-family: var(--font-display);
 	letter-spacing: 0.04em;
-	text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+	text-shadow: none;
 }
 
 .submission-header p {
@@ -90,7 +90,7 @@
 
 .form-section h3 {
 	margin: 0 0 0.75rem 0;
-	color: var(--neon-amber);
+	color: var(--accent-rust);
 	font-size: 1.1rem;
 	font-family: var(--font-display);
 	letter-spacing: 0.06em;
@@ -127,15 +127,15 @@
 .form-section select:focus,
 .form-section textarea:focus {
 	outline: none;
-	border-color: var(--neon-blue);
-	box-shadow: 0 0 12px rgba(0, 212, 255, 0.15);
+	border-color: var(--accent-gold);
+	box-shadow: 0 0 12px rgba(201, 168, 76, 0.1);
 }
 
 .form-section select {
 	cursor: pointer;
 	-webkit-appearance: none;
 	appearance: none;
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23918578' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
 	background-repeat: no-repeat;
 	background-position: right 0.75rem center;
 	padding-right: 2rem;
@@ -162,15 +162,15 @@
 }
 
 .message.success {
-	background: rgba(57, 255, 20, 0.08);
-	border: 1px solid rgba(57, 255, 20, 0.2);
-	color: var(--neon-green);
+	background: rgba(122, 140, 110, 0.1);
+	border: 1px solid rgba(122, 140, 110, 0.25);
+	color: var(--accent-sage);
 }
 
 .message.error {
-	background: rgba(255, 45, 85, 0.08);
-	border: 1px solid rgba(255, 45, 85, 0.2);
-	color: var(--neon-pink);
+	background: rgba(181, 96, 74, 0.1);
+	border: 1px solid rgba(181, 96, 74, 0.25);
+	color: var(--accent-rust);
 }
 
 /* ===== FORM ACTIONS ===== */
@@ -195,13 +195,13 @@
 }
 
 .btn-primary {
-	background: var(--neon-pink);
-	color: black;
-	border: 1px solid var(--neon-pink);
+	background: var(--accent-gold);
+	color: var(--bg-void);
+	border: 1px solid var(--accent-gold);
 }
 
 .btn-primary:hover:not(:disabled) {
-	box-shadow: var(--glow-pink);
+	box-shadow: var(--glow-gold);
 	transform: none;
 }
 

@@ -5,7 +5,7 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: rgba(0, 0, 0, 0.85);
+	background: rgba(10, 8, 6, 0.88);
 	backdrop-filter: blur(8px);
 	display: flex;
 	justify-content: center;
@@ -18,14 +18,14 @@
 .modal-content {
 	background: var(--bg-surface);
 	border: 1px solid var(--border-medium);
-	border-top: 2px solid var(--neon-pink);
+	border-top: 2px solid var(--accent-gold);
 	border-radius: 2px;
 	max-width: 600px;
 	width: 100%;
 	max-height: 80vh;
 	overflow-y: auto;
 	position: relative;
-	box-shadow: 0 0 60px rgba(255, 45, 85, 0.08);
+	box-shadow: 0 0 60px rgba(201, 168, 76, 0.06);
 }
 
 .modal-close {
@@ -49,10 +49,10 @@
 }
 
 .modal-close:hover {
-	background: var(--neon-pink);
-	color: black;
-	border-color: var(--neon-pink);
-	box-shadow: var(--glow-pink);
+	background: var(--accent-rust);
+	color: var(--bg-void);
+	border-color: var(--accent-rust);
+	box-shadow: var(--glow-rust);
 	transform: none;
 }
 
@@ -67,11 +67,11 @@
 
 .modal-header h2 {
 	margin: 0;
-	color: var(--neon-pink);
+	color: var(--accent-gold);
 	font-size: 2rem;
 	font-family: var(--font-display);
 	letter-spacing: 0.04em;
-	text-shadow: 0 0 30px rgba(255, 45, 85, 0.3);
+	text-shadow: none;
 }
 
 .modal-header-actions {
@@ -82,8 +82,8 @@
 
 .edit-band-button {
 	background: transparent;
-	border: 1px solid var(--neon-blue);
-	color: var(--neon-blue);
+	border: 1px solid var(--accent-sage);
+	color: var(--accent-sage);
 	padding: 0.4rem 0.8rem;
 	border-radius: 2px;
 	font-size: 0.7rem;
@@ -96,17 +96,17 @@
 }
 
 .edit-band-button:hover {
-	background: var(--neon-blue);
-	color: black;
-	border-color: var(--neon-blue);
-	box-shadow: var(--glow-blue);
+	background: var(--accent-sage);
+	color: var(--bg-void);
+	border-color: var(--accent-sage);
+	box-shadow: none;
 	transform: none;
 }
 
 .delete-band-button {
 	background: transparent;
-	border: 1px solid rgba(255, 45, 85, 0.3);
-	color: var(--neon-pink);
+	border: 1px solid rgba(181, 96, 74, 0.3);
+	color: var(--accent-rust);
 	padding: 0.4rem 0.8rem;
 	border-radius: 2px;
 	font-size: 0.7rem;
@@ -119,19 +119,19 @@
 }
 
 .delete-band-button:hover {
-	background: var(--neon-pink);
-	color: black;
-	border-color: var(--neon-pink);
-	box-shadow: var(--glow-pink);
+	background: var(--accent-rust);
+	color: var(--bg-void);
+	border-color: var(--accent-rust);
+	box-shadow: var(--glow-rust);
 	transform: none;
 }
 
 /* ===== EDIT MODE: NAME INPUT ===== */
 .edit-name-input {
 	background: var(--bg-deep);
-	border: 1px solid var(--neon-pink);
+	border: 1px solid var(--accent-gold);
 	border-radius: 2px;
-	color: var(--neon-pink);
+	color: var(--accent-gold);
 	font-size: 1.6rem;
 	font-family: var(--font-display);
 	letter-spacing: 0.04em;
@@ -142,7 +142,7 @@
 }
 
 .edit-name-input:focus {
-	box-shadow: 0 0 12px rgba(255, 45, 85, 0.2);
+	box-shadow: 0 0 12px rgba(201, 168, 76, 0.15);
 }
 
 /* ===== MODAL BODY ===== */
@@ -163,15 +163,15 @@
 	padding: 1rem;
 	border-radius: 2px;
 	text-align: center;
-	border-left: 2px solid var(--neon-blue);
+	border-left: 2px solid var(--accent-gold);
 }
 
 .modal-body .stat-item:nth-child(2) {
-	border-left-color: var(--neon-amber);
+	border-left-color: var(--accent-rust);
 }
 
 .modal-body .stat-item:nth-child(3) {
-	border-left-color: var(--neon-pink);
+	border-left-color: var(--accent-sage);
 }
 
 .stat-label {
@@ -189,16 +189,16 @@
 	font-size: 1.6rem;
 	font-weight: 400;
 	font-family: var(--font-display);
-	color: var(--neon-blue);
+	color: var(--accent-gold);
 	letter-spacing: 0.02em;
 }
 
 .modal-body .stat-item:nth-child(2) .stat-value {
-	color: var(--neon-amber);
+	color: var(--accent-rust);
 }
 
 .modal-body .stat-item:nth-child(3) .stat-value {
-	color: var(--neon-pink);
+	color: var(--accent-sage);
 }
 
 /* ===== DETAIL SECTIONS ===== */
@@ -208,7 +208,7 @@
 
 .band-detail-section h3 {
 	margin: 0 0 0.75rem 0;
-	color: var(--neon-amber);
+	color: var(--accent-rust);
 	font-size: 1.2rem;
 	font-family: var(--font-display);
 	letter-spacing: 0.06em;
@@ -242,8 +242,8 @@
 }
 
 .edit-textarea:focus {
-	border-color: var(--neon-blue);
-	box-shadow: 0 0 12px rgba(0, 212, 255, 0.1);
+	border-color: var(--accent-gold);
+	box-shadow: 0 0 12px rgba(201, 168, 76, 0.1);
 }
 
 /* ===== MEMBERS ===== */
@@ -287,26 +287,26 @@
 }
 
 .link-button:hover {
-	color: var(--neon-blue);
-	border-color: var(--neon-blue);
-	box-shadow: var(--glow-blue);
+	color: var(--accent-gold);
+	border-color: var(--accent-gold);
+	box-shadow: var(--glow-gold);
 }
 
 .link-bandcamp:hover {
-	color: var(--neon-blue);
-	border-color: var(--neon-blue);
+	color: var(--accent-gold);
+	border-color: var(--accent-gold);
 }
 
 .link-spotify:hover {
-	color: var(--neon-green);
-	border-color: var(--neon-green);
-	box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+	color: var(--accent-sage);
+	border-color: var(--accent-sage);
+	box-shadow: 0 0 16px rgba(122, 140, 110, 0.25);
 }
 
 .link-instagram:hover {
-	color: var(--neon-pink);
-	border-color: var(--neon-pink);
-	box-shadow: var(--glow-pink);
+	color: var(--accent-rust);
+	border-color: var(--accent-rust);
+	box-shadow: var(--glow-rust);
 }
 
 /* ===== EDIT LINKS GRID ===== */
@@ -344,8 +344,8 @@
 }
 
 .edit-link-row input:focus {
-	border-color: var(--neon-blue);
-	box-shadow: 0 0 12px rgba(0, 212, 255, 0.1);
+	border-color: var(--accent-gold);
+	box-shadow: 0 0 12px rgba(201, 168, 76, 0.1);
 }
 
 .edit-link-row input::placeholder {
@@ -363,9 +363,9 @@
 }
 
 .btn-save {
-	background: var(--neon-pink);
-	color: black;
-	border: 1px solid var(--neon-pink);
+	background: var(--accent-gold);
+	color: var(--bg-void);
+	border: 1px solid var(--accent-gold);
 	padding: 0.5rem 1.2rem;
 	border-radius: 2px;
 	font-size: 0.75rem;
@@ -378,7 +378,7 @@
 }
 
 .btn-save:hover:not(:disabled) {
-	box-shadow: var(--glow-pink);
+	box-shadow: var(--glow-gold);
 }
 
 .btn-save:disabled {
@@ -411,7 +411,7 @@
 /* ===== CONNECTED BANDS ===== */
 .connected-bands h3 {
 	margin: 0 0 1rem 0;
-	color: var(--neon-amber);
+	color: var(--accent-rust);
 	font-size: 1.2rem;
 	font-family: var(--font-display);
 	letter-spacing: 0.06em;
@@ -440,7 +440,7 @@
 }
 
 .connected-band-item:hover {
-	border-left-color: var(--neon-blue);
+	border-left-color: var(--accent-gold);
 	background: var(--bg-raised);
 }
 
@@ -457,14 +457,14 @@
 }
 
 .band-name.clickable-band {
-	color: var(--neon-blue);
+	color: var(--accent-gold);
 	text-decoration: none;
 	cursor: pointer;
 }
 
 .band-name.clickable-band:hover {
-	color: var(--neon-pink);
-	text-shadow: 0 0 12px rgba(255, 45, 85, 0.4);
+	color: var(--accent-rust);
+	text-shadow: none;
 }
 
 .connection-type {
@@ -479,7 +479,7 @@
 
 .delete-connection-button {
 	background: transparent;
-	border: 1px solid rgba(255, 45, 85, 0.2);
+	border: 1px solid rgba(181, 96, 74, 0.2);
 	color: var(--text-dim);
 	width: 1.4rem;
 	height: 1.4rem;
@@ -494,9 +494,9 @@
 }
 
 .delete-connection-button:hover {
-	background: var(--neon-pink);
-	color: black;
-	border-color: var(--neon-pink);
+	background: var(--accent-rust);
+	color: var(--bg-void);
+	border-color: var(--accent-rust);
 	box-shadow: none;
 	transform: none;
 }

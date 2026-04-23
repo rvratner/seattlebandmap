@@ -73,24 +73,24 @@ const SearchBox: React.FC<SearchBoxProps> = ({ onBandSelect, apiUrl }) => {
 				style={{
 					width: '100%',
 					padding: '8px 12px',
-					background: '#0a0a0a',
-					border: '1px solid #2a2a2a',
+					background: '#211e1a',
+					border: '1px solid #443f39',
 					borderRadius: '2px',
 					fontSize: '12px',
 					fontFamily: "'Space Mono', monospace",
 					fontWeight: 700,
-					color: '#e0e0e0',
+					color: '#e0d6c8',
 					letterSpacing: '0.06em',
 					textTransform: 'uppercase',
 					transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
 					outline: 'none',
 				}}
 				onFocusCapture={(e) => {
-					e.currentTarget.style.borderColor = '#00d4ff'
-					e.currentTarget.style.boxShadow = '0 0 12px rgba(0,212,255,0.15)'
+					e.currentTarget.style.borderColor = '#c9a84c'
+					e.currentTarget.style.boxShadow = '0 0 12px rgba(201,168,76,0.1)'
 				}}
 				onBlurCapture={(e) => {
-					e.currentTarget.style.borderColor = '#2a2a2a'
+					e.currentTarget.style.borderColor = '#443f39'
 					e.currentTarget.style.boxShadow = 'none'
 				}}
 			/>
@@ -101,11 +101,11 @@ const SearchBox: React.FC<SearchBoxProps> = ({ onBandSelect, apiUrl }) => {
 					top: '100%',
 					left: 0,
 					right: 0,
-					backgroundColor: '#111111',
-					border: '1px solid #2a2a2a',
+					backgroundColor: '#2a2622',
+					border: '1px solid #443f39',
 					borderTop: 'none',
 					borderRadius: '0 0 2px 2px',
-					boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+					boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
 					zIndex: 1000,
 					maxHeight: '300px',
 					overflowY: 'auto',
@@ -114,7 +114,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ onBandSelect, apiUrl }) => {
 						<div style={{
 							padding: '12px',
 							textAlign: 'center',
-							color: '#666',
+							color: '#918578',
 							fontSize: '11px',
 							fontFamily: "'Space Mono', monospace",
 							letterSpacing: '0.06em',
@@ -130,7 +130,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ onBandSelect, apiUrl }) => {
 								style={{
 									padding: '8px 12px',
 									cursor: 'pointer',
-									borderBottom: '1px solid #1a1a1a',
+									borderBottom: '1px solid #33302b',
 									display: 'flex',
 									justifyContent: 'space-between',
 									alignItems: 'center',
@@ -139,21 +139,19 @@ const SearchBox: React.FC<SearchBoxProps> = ({ onBandSelect, apiUrl }) => {
 									fontFamily: "'Space Mono', monospace",
 								}}
 								onMouseEnter={(e) => {
-									e.currentTarget.style.backgroundColor = '#1a1a1a'
-									e.currentTarget.style.borderLeftColor = '#ff2d55'
+									e.currentTarget.style.backgroundColor = '#33302b'
 									const nameSpan = e.currentTarget.querySelector('.result-name') as HTMLElement
-									if (nameSpan) nameSpan.style.color = '#ff2d55'
+									if (nameSpan) nameSpan.style.color = '#c9a84c'
 								}}
 								onMouseLeave={(e) => {
 									e.currentTarget.style.backgroundColor = 'transparent'
-									e.currentTarget.style.borderLeftColor = 'transparent'
 									const nameSpan = e.currentTarget.querySelector('.result-name') as HTMLElement
-									if (nameSpan) nameSpan.style.color = '#e0e0e0'
+									if (nameSpan) nameSpan.style.color = '#e0d6c8'
 								}}
 							>
-								<span className="result-name" style={{ fontWeight: 700, color: '#e0e0e0', transition: 'color 0.1s' }}>{band.name}</span>
+								<span className="result-name" style={{ fontWeight: 700, color: '#e0d6c8', transition: 'color 0.1s' }}>{band.name}</span>
 								<span style={{
-									color: '#444',
+									color: '#665e55',
 									fontSize: '10px',
 									letterSpacing: '0.04em',
 								}}>
@@ -165,7 +163,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ onBandSelect, apiUrl }) => {
 						<div style={{
 							padding: '12px',
 							textAlign: 'center',
-							color: '#444',
+							color: '#665e55',
 							fontSize: '11px',
 							fontFamily: "'Space Mono', monospace",
 							letterSpacing: '0.06em',
