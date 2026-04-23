@@ -70,10 +70,15 @@ app = FastAPI(
 )
 
 # Configure CORS
+_production_origins = [
+    "https://seattlebandmap.com",
+    "https://www.seattlebandmap.com",
+    "https://frontend-production-b240.up.railway.app",
+]
 allowed_origins = os.getenv(
     "ALLOWED_ORIGINS",
-    "http://localhost:3000,http://frontend:3000,https://seattlebandmap.com,https://www.seattlebandmap.com,https://frontend-production-b240.up.railway.app",
-).split(",")
+    "http://localhost:3000,http://frontend:3000",
+).split(",") + _production_origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
