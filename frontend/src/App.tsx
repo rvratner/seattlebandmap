@@ -56,7 +56,7 @@ function App() {
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
 	const [activeTab, setActiveTab] = useState<'list' | 'graph'>(
-		(searchParams.get('tab') as 'list' | 'graph') || 'list'
+		(searchParams.get('tab') as 'list' | 'graph') || 'graph'
 	)
 
 	// Modal states
@@ -268,41 +268,46 @@ function App() {
 			</header>
 
 			<main className="App-main">
-				<div className="status-section">
-					{loading && <p>Loading data...</p>}
-					{error && <p className="error">Error: {error}</p>}
-					{!loading && !error && (
-						<div className="stats-grid">
-							<div className="stat-item">
-								<h3>Total Bands</h3>
-								<p>{stats?.total_bands || 0}</p>
-							</div>
-							<div className="stat-item">
-								<h3>Total Connections</h3>
-								<p>{stats?.total_connections || 0}</p>
-							</div>
-							<div className="stat-item">
-								<h3>Avg Connections</h3>
-								<p>{stats?.average_connections_per_band || 0}</p>
-							</div>
-						</div>
-					)}
-				</div>
-
 				<div className="view-tabs">
-					<button
-						className={`tab-button ${activeTab === 'list' ? 'active' : ''}`}
-						onClick={() => handleTabChange('list')}
-					>
-						List View
-					</button>
 					<button
 						className={`tab-button ${activeTab === 'graph' ? 'active' : ''}`}
 						onClick={() => handleTabChange('graph')}
 					>
 						Network Graph
 					</button>
+					<button
+						className={`tab-button ${activeTab === 'list' ? 'active' : ''}`}
+						onClick={() => handleTabChange('list')}
+					>
+						List View
+					</button>
 				</div>
+
+				{activeTab === 'graph' && (
+					<div className="graph-section">
+						<h2>Band Network Graph</h2>
+						{isNetworkView ? (
+							<p className="graph-description">
+								Showing network for <strong>{selectedBandName}</strong> and all connected bands.
+								Click on any band to see details. Click "Reset View" to return to the main graph.
+							</p>
+						) : (
+							<p className="graph-description">
+								Interactive network showing connections between bands.
+								Click on any band to expand and see its full network. Drag nodes to rearrange.
+								Showing top {graphData.nodes.length} bands by connection count.
+							</p>
+						)}
+						<div className="graph-container">
+							<ForceGraph
+								bands={graphData.nodes}
+								connections={graphData.links}
+								onNodeClick={handleNodeClick}
+								onReset={isNetworkView ? handleResetGraph : undefined}
+							/>
+						</div>
+					</div>
+				)}
 
 				{activeTab === 'list' && (
 					<>
@@ -364,35 +369,35 @@ function App() {
 					</>
 				)}
 
-				{activeTab === 'graph' && (
-					<div className="graph-section">
-						<h2>Band Network Graph</h2>
-						{isNetworkView ? (
-							<p className="graph-description">
-								Showing network for <strong>{selectedBandName}</strong> and all connected bands.
-								Click on any band to see details. Click "Reset View" to return to the main graph.
-							</p>
-						) : (
-							<p className="graph-description">
-								Interactive network showing connections between bands.
-								Click on any band to expand and see its full network. Drag nodes to rearrange.
-								Showing top {graphData.nodes.length} bands by connection count.
-							</p>
-						)}
-						<div className="graph-container">
-							<ForceGraph
-								bands={graphData.nodes}
-								connections={graphData.links}
-								onNodeClick={handleNodeClick}
-								onReset={isNetworkView ? handleResetGraph : undefined}
-							/>
+				<div className="status-section">
+					{loading && <p>Loading data...</p>}
+					{error && <p className="error">Error: {error}</p>}
+					{!loading && !error && (
+						<div className="stats-grid">
+							<div className="stat-item">
+								<h3>Total Bands</h3>
+								<p>{stats?.total_bands || 0}</p>
+							</div>
+							<div className="stat-item">
+								<h3>Total Connections</h3>
+								<p>{stats?.total_connections || 0}</p>
+							</div>
+							<div className="stat-item">
+								<h3>Avg Connections</h3>
+								<p>{stats?.average_connections_per_band || 0}</p>
+							</div>
 						</div>
-					</div>
-				)}
+					)}
+				</div>
 			</main>
 
 			<footer className="App-footer">
-				<p>&copy; {new Date().getFullYear()} Seattle Band Map</p>
+				<div className="footer-links">
+					<a href="/blog" className="footer-link">Blog</a>
+					<span className="footer-divider">/</span>
+					<a href="https://www.rachelratner.com" className="footer-link" target="_blank" rel="noopener noreferrer">About</a>
+				</div>
+				<p>&copy; {new Date().getFullYear()} Seattle Band Map &mdash; Built by <a href="https://www.rachelratner.com" target="_blank" rel="noopener noreferrer" className="footer-credit">Rachel Ratner</a></p>
 			</footer>
 
 			{/* Modals */}
