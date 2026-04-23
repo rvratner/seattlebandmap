@@ -257,27 +257,27 @@ function App() {
 				<h1>Seattle Band Map</h1>
 				<p>Exploring connections between Pacific Northwest bands</p>
 				<div className="header-actions">
-					<SearchBox onBandSelect={handleBandSelect} apiUrl={apiUrl} />
-					<div className="header-right">
-						<div className="view-tabs">
-							<button
-								className={`tab-button ${activeTab === 'graph' ? 'active' : ''}`}
-								onClick={() => handleTabChange('graph')}
-							>
-								Network Graph
-							</button>
-							<button
-								className={`tab-button ${activeTab === 'list' ? 'active' : ''}`}
-								onClick={() => handleTabChange('list')}
-							>
-								List View
-							</button>
-						</div>
+					<div className="header-search">
+						<SearchBox onBandSelect={handleBandSelect} apiUrl={apiUrl} />
 						<button
 							className="submit-button"
 							onClick={() => setIsSubmissionOpen(true)}
 						>
 							+ Add Connection
+						</button>
+					</div>
+					<div className="view-tabs">
+						<button
+							className={`tab-button ${activeTab === 'graph' ? 'active' : ''}`}
+							onClick={() => handleTabChange('graph')}
+						>
+							Network Graph
+						</button>
+						<button
+							className={`tab-button ${activeTab === 'list' ? 'active' : ''}`}
+							onClick={() => handleTabChange('list')}
+						>
+							List View
 						</button>
 					</div>
 				</div>
