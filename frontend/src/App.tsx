@@ -397,7 +397,7 @@ function App() {
 				<div className="footer-links">
 					<a href="/blog" className="footer-link">Blog</a>
 					<span className="footer-divider">/</span>
-					<a href="https://www.rachelratner.com" className="footer-link" target="_blank" rel="noopener noreferrer">About</a>
+					<a href="/about" className="footer-link">About</a>
 				</div>
 				<p>&copy; {new Date().getFullYear()} Seattle Band Map &mdash; Built by <a href="https://www.rachelratner.com" target="_blank" rel="noopener noreferrer" className="footer-credit">Rachel Ratner</a></p>
 			</footer>
