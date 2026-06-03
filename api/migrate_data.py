@@ -9,10 +9,33 @@ import os
 import sys
 from datetime import datetime
 
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from database import SessionLocal
 from models import Band, Base, Connection
+
+
+def reset_sequences(session: Session) -> None:
+    """Resync Postgres auto-increment sequences after inserting rows with
+    explicit IDs. Without this, the sequence stays at its initial value and
+    new inserts collide with existing IDs (UniqueViolation on the pkey)."""
+    print("Resetting ID sequences...")
+    for table in ("bands", "connections"):
+        # setval to MAX(id) with is_called=true so the next nextval()
+        # returns MAX(id)+1. For an empty table, fall back to value 1 with
+        # is_called=false so the first nextval() returns 1.
+        session.execute(
+            text(
+                f"SELECT setval("
+                f"  pg_get_serial_sequence('{table}', 'id'),"
+                f"  COALESCE((SELECT MAX(id) FROM {table}), 1),"
+                f"  (SELECT MAX(id) IS NOT NULL FROM {table})"
+                f")"
+            )
+        )
+    session.commit()
+    print("Sequences reset.")
 
 
 def parse_timestamp(timestamp_str: str) -> datetime:
@@ -183,6 +206,10 @@ def main() -> None:
         # Migrate data
         migrate_bands(bands_csv, session)
         migrate_connections(connections_csv, session)
+
+        # Resync sequences so subsequent auto-increment inserts don't collide
+        # with the explicit IDs we just imported.
+        reset_sequences(session)
 
         # Print summary
         band_count = session.query(Band).count()

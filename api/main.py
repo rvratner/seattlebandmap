@@ -621,6 +621,8 @@ async def get_band(band_id: int, db: Session = Depends(get_db)) -> dict:
                         "id": connected_band.id,
                         "name": connected_band.name,
                         "connection_type": conn.connection_type,
+                        "connection_id": conn.id,
+                        "description": conn.description,
                     }
                 )
 

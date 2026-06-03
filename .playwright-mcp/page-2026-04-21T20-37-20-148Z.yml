@@ -1,0 +1,23 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - heading "Seattle Band Map" [level=1] [ref=e5]
+    - paragraph [ref=e6]: Exploring connections between Pacific Northwest bands
+    - generic [ref=e7]:
+      - textbox "SEARCH BANDS..." [ref=e9]
+      - button "+ Add Connection" [ref=e10] [cursor=pointer]
+  - main [ref=e11]:
+    - paragraph [ref=e13]: "Error: Failed to fetch"
+    - generic [ref=e14]:
+      - button "List View" [ref=e15] [cursor=pointer]
+      - button "Network Graph" [ref=e16] [cursor=pointer]
+    - generic [ref=e17]:
+      - heading "Most Recently Updated" [level=2] [ref=e18]
+      - paragraph [ref=e19]: No recent bands found
+    - generic [ref=e20]:
+      - heading "Most Connections" [level=2] [ref=e21]
+      - paragraph [ref=e22]: No bands found
+    - generic [ref=e23]:
+      - heading "Most Popular" [level=2] [ref=e24]
+      - paragraph [ref=e25]: No popular bands found
+  - contentinfo [ref=e26]:
+    - paragraph [ref=e27]: Seattle Band Map - Modern Version | Data migrated from original project

@@ -19,6 +19,9 @@ interface ForceGraphProps {
 	connections: Connection[]
 	onNodeClick?: (bandId: number) => void
 	onReset?: () => void
+	/** Show every band's label rather than only the most-connected ones.
+	    Used in the focused network view so all connections are named. */
+	labelAll?: boolean
 }
 
 const CONNECTION_COLORS: Record<string, string> = {
@@ -44,7 +47,7 @@ function getNodeRadius(d: Band): number {
 	return Math.max(4, Math.min(22, 3 + d.connections * 1.5))
 }
 
-const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick, onReset }) => {
+const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick, onReset, labelAll }) => {
 	const containerRef = useRef<HTMLDivElement>(null)
 	const svgRef = useRef<SVGSVGElement>(null)
 	const tooltipRef = useRef<HTMLDivElement>(null)
@@ -229,7 +232,7 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 			.style('text-transform', 'uppercase')
 			.style('letter-spacing', '0.04em')
 			.style('text-shadow', '0 0 8px rgba(26,23,20,0.9), 0 0 16px rgba(26,23,20,0.7)')
-			.style('opacity', d => (d.is_main || d.connections >= labelThreshold) ? 1 : 0)
+			.style('opacity', d => (labelAll || d.is_main || d.connections >= labelThreshold) ? 1 : 0)
 
 		// Tick
 		simulation.on('tick', () => {
@@ -252,7 +255,7 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ bands, connections, onNodeClick
 			simulation.stop()
 			tooltip.style('display', 'none')
 		}
-	}, [bands, connections, onNodeClick])
+	}, [bands, connections, onNodeClick, labelAll])
 
 	// Responsive: re-render on container resize
 	useEffect(() => {

@@ -25,6 +25,8 @@ interface ConnectedBand {
 	id: number
 	name: string
 	connection_type?: string
+	connection_id?: number
+	description?: string
 }
 
 interface Connection {
@@ -52,6 +54,7 @@ function App() {
 	const [graphData, setGraphData] = useState<GraphData>({ nodes: [], links: [] })
 	const [isNetworkView, setIsNetworkView] = useState(false)
 	const [selectedBandName, setSelectedBandName] = useState<string>('')
+	const [selectedBandDetail, setSelectedBandDetail] = useState<Band | null>(null)
 	const [stats, setStats] = useState<Stats | null>(null)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
@@ -130,16 +133,22 @@ function App() {
 
 	const loadBandNetwork = async (bandId: number) => {
 		try {
-			const response = await fetch(`${apiUrl}/api/bands/${bandId}/network`)
-			if (response.ok) {
-				const networkData = await response.json()
+			const [networkRes, bandRes] = await Promise.all([
+				fetch(`${apiUrl}/api/bands/${bandId}/network`),
+				fetch(`${apiUrl}/api/bands/${bandId}`)
+			])
+			if (networkRes.ok) {
+				const networkData = await networkRes.json()
 				setGraphData({
 					nodes: networkData.nodes,
 					links: networkData.links
 				})
 				setIsNetworkView(true)
 				setSelectedBandName(networkData.main_band.name)
-				setSearchParams({ tab: 'graph', band: String(bandId) })
+				setSearchParams({ band: String(bandId) })
+			}
+			if (bandRes.ok) {
+				setSelectedBandDetail(await bandRes.json())
 			}
 		} catch (error) {
 			console.error('Failed to fetch band network:', error)
@@ -168,7 +177,6 @@ function App() {
 	}
 
 	const handleBandSelect = useCallback((bandId: number) => {
-		setActiveTab('graph')
 		loadBandNetwork(bandId)
 	}, [])
 
@@ -180,7 +188,9 @@ function App() {
 				setGraphData(data)
 				setIsNetworkView(false)
 				setSelectedBandName('')
-				setSearchParams({ tab: 'graph' })
+				setSelectedBandDetail(null)
+				setActiveTab('graph')
+				setSearchParams({})
 			}
 		} catch (error) {
 			console.error('Failed to reset graph:', error)
@@ -240,14 +250,12 @@ function App() {
 
 	const handleTabChange = (tab: 'list' | 'graph') => {
 		setActiveTab(tab)
-		setSearchParams(tab === 'graph' ? { tab: 'graph' } : {})
 	}
 
 	// Navigate to a connected band from the modal
 	const handleConnectedBandClick = (bandId: number) => {
 		setIsModalOpen(false)
 		setSelectedBand(null)
-		setActiveTab('graph')
 		loadBandNetwork(bandId)
 	}
 
@@ -266,34 +274,72 @@ function App() {
 							+ Add Connection
 						</button>
 					</div>
-					<div className="view-tabs">
-						<button
-							className={`tab-button ${activeTab === 'graph' ? 'active' : ''}`}
-							onClick={() => handleTabChange('graph')}
-						>
-							Network Graph
-						</button>
-						<button
-							className={`tab-button ${activeTab === 'list' ? 'active' : ''}`}
-							onClick={() => handleTabChange('list')}
-						>
-							List View
-						</button>
-					</div>
 				</div>
 			</header>
 
 			<main className="App-main">
 
-				{activeTab === 'graph' && (
+				{/* When a band is selected, let the user toggle between the
+				    network map and a list of that band's connections. */}
+				{isNetworkView && (
+					<div className="view-tabs band-view-tabs">
+						<button
+							className={`tab-button ${activeTab === 'graph' ? 'active' : ''}`}
+							onClick={() => handleTabChange('graph')}
+						>
+							Map
+						</button>
+						<button
+							className={`tab-button ${activeTab === 'list' ? 'active' : ''}`}
+							onClick={() => handleTabChange('list')}
+						>
+							List
+						</button>
+					</div>
+				)}
+
+				{isNetworkView && activeTab === 'list' && selectedBandDetail ? (
+					<div className="bands-section selected-band-section">
+						<div className="selected-band-header">
+							<h2>{selectedBandDetail.name}</h2>
+							<button className="reset-link" onClick={handleResetGraph}>Reset View</button>
+						</div>
+						{selectedBandDetail.description && (
+							<p className="selected-band-desc">{selectedBandDetail.description}</p>
+						)}
+						<h3 className="connections-heading">
+							{selectedBandDetail.connected_bands?.length || 0} Connections
+						</h3>
+						{selectedBandDetail.connected_bands && selectedBandDetail.connected_bands.length > 0 ? (
+							<ul className="bands-list">
+								{selectedBandDetail.connected_bands.map((cb) => (
+									<li key={cb.connection_id ?? cb.id} className="band-item clickable" onClick={() => handleBandSelect(cb.id)}>
+										<div className="band-info">
+											<strong>{cb.name}</strong>
+											{cb.connection_type && (
+												<span className="connection-type">
+													{cb.connection_type.replace('_', ' ')}
+													{cb.description ? ` — ${cb.description}` : ''}
+												</span>
+											)}
+										</div>
+									</li>
+								))}
+							</ul>
+						) : (
+							<p>No connections found for this band.</p>
+						)}
+					</div>
+				) : (
 					<div className="graph-section">
-						<h2>Band Network Graph</h2>
+						<h2>{isNetworkView ? selectedBandName : 'Band Network Graph'}</h2>
 						<div className="graph-container">
 							<ForceGraph
 								bands={graphData.nodes}
 								connections={graphData.links}
 								onNodeClick={handleNodeClick}
 								onReset={isNetworkView ? handleResetGraph : undefined}
+								labelAll={isNetworkView}
 							/>
 						</div>
 						{isNetworkView ? (
@@ -311,65 +357,62 @@ function App() {
 					</div>
 				)}
 
-				{activeTab === 'list' && (
-					<>
-						<div className="bands-section">
-							<h2>Most Recently Updated</h2>
-							{recentBands.length > 0 ? (
-								<ul className="bands-list">
-									{recentBands.map((band) => (
-										<li key={band.id} className="band-item clickable" onClick={() => handleBandSelect(band.id)}>
-											<div className="band-info">
-												<strong>{band.name}</strong>
-												<span className="band-date">{formatDate(band.last_updated || '')}</span>
-											</div>
-											<span className="band-connections">{band.connections} connections</span>
-										</li>
-									))}
-								</ul>
-							) : (
-								<p>No recent bands found</p>
-							)}
-						</div>
+				{/* Curated lists always render below the map. */}
+				<div className="bands-section">
+					<h2>Most Recently Updated</h2>
+					{recentBands.length > 0 ? (
+						<ul className="bands-list">
+							{recentBands.map((band) => (
+								<li key={band.id} className="band-item clickable" onClick={() => handleBandSelect(band.id)}>
+									<div className="band-info">
+										<strong>{band.name}</strong>
+										<span className="band-date">{formatDate(band.last_updated || '')}</span>
+									</div>
+									<span className="band-connections">{band.connections} connections</span>
+								</li>
+							))}
+						</ul>
+					) : (
+						<p>No recent bands found</p>
+					)}
+				</div>
 
-						<div className="bands-section">
-							<h2>Most Connections</h2>
-							{connectedBands.length > 0 ? (
-								<ul className="bands-list">
-									{connectedBands.map((band) => (
-										<li key={band.id} className="band-item clickable" onClick={() => handleBandSelect(band.id)}>
-											<div className="band-info">
-												<strong>{band.name}</strong>
-											</div>
-											<span className="band-connections">{band.connections} connections</span>
-										</li>
-									))}
-								</ul>
-							) : (
-								<p>No bands found</p>
-							)}
-						</div>
+				<div className="bands-section">
+					<h2>Most Connections</h2>
+					{connectedBands.length > 0 ? (
+						<ul className="bands-list">
+							{connectedBands.map((band) => (
+								<li key={band.id} className="band-item clickable" onClick={() => handleBandSelect(band.id)}>
+									<div className="band-info">
+										<strong>{band.name}</strong>
+									</div>
+									<span className="band-connections">{band.connections} connections</span>
+								</li>
+							))}
+						</ul>
+					) : (
+						<p>No bands found</p>
+					)}
+				</div>
 
-						<div className="bands-section">
-							<h2>Most Popular</h2>
-							{popularBands.length > 0 ? (
-								<ul className="bands-list">
-									{popularBands.map((band) => (
-										<li key={band.id} className="band-item clickable" onClick={() => handleBandSelect(band.id)}>
-											<div className="band-info">
-												<strong>{band.name}</strong>
-												<span className="band-clicks">{band.click_count} clicks</span>
-											</div>
-											<span className="band-connections">{band.connections} connections</span>
-										</li>
-									))}
-								</ul>
-							) : (
-								<p>No popular bands found</p>
-							)}
-						</div>
-					</>
-				)}
+				<div className="bands-section">
+					<h2>Most Popular</h2>
+					{popularBands.length > 0 ? (
+						<ul className="bands-list">
+							{popularBands.map((band) => (
+								<li key={band.id} className="band-item clickable" onClick={() => handleBandSelect(band.id)}>
+									<div className="band-info">
+										<strong>{band.name}</strong>
+										<span className="band-clicks">{band.click_count} clicks</span>
+									</div>
+									<span className="band-connections">{band.connections} connections</span>
+								</li>
+							))}
+						</ul>
+					) : (
+						<p>No popular bands found</p>
+					)}
+				</div>
 
 				<div className="status-section">
 					{loading && <p>Loading data...</p>}
