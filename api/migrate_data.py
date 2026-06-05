@@ -149,12 +149,14 @@ def migrate_connections(csv_path: str, session: Session) -> None:
                     skipped_count += 1
                     continue
 
-                # Create connection object
+                # Create connection object. Leave description empty — the old
+                # data has no per-connection detail, and a placeholder string
+                # would surface in the UI as if it were a real note.
                 connection = Connection(
                     band1_id=band1_id,
                     band2_id=band2_id,
                     connection_type="member_shared",  # Default type
-                    description="Migrated from old database",
+                    description=None,
                 )
 
                 session.add(connection)

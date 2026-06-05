@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import ForceGraph from './components/ForceGraph'
 import BandModal from './components/BandModal'
 import SubmissionForm from './components/SubmissionForm'
+import AddBandForm from './components/AddBandForm'
 import SearchBox from './components/SearchBox'
 import './App.css'
 
@@ -66,6 +67,7 @@ function App() {
 	const [selectedBand, setSelectedBand] = useState<Band | null>(null)
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [isSubmissionOpen, setIsSubmissionOpen] = useState(false)
+	const [isAddBandOpen, setIsAddBandOpen] = useState(false)
 
 	const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
@@ -273,6 +275,12 @@ function App() {
 						>
 							+ Add Connection
 						</button>
+						<button
+							className="submit-button"
+							onClick={() => setIsAddBandOpen(true)}
+						>
+							+ Add Band
+						</button>
 					</div>
 				</div>
 			</header>
@@ -319,7 +327,9 @@ function App() {
 											{cb.connection_type && (
 												<span className="connection-type">
 													{cb.connection_type.replace('_', ' ')}
-													{cb.description ? ` — ${cb.description}` : ''}
+													{cb.description && cb.description !== 'Migrated from old database'
+														? ` — ${cb.description}`
+														: ''}
 												</span>
 											)}
 										</div>
@@ -469,6 +479,13 @@ function App() {
 				isOpen={isSubmissionOpen}
 				onClose={() => setIsSubmissionOpen(false)}
 				onSubmit={fetchData}
+			/>
+
+			<AddBandForm
+				isOpen={isAddBandOpen}
+				onClose={() => setIsAddBandOpen(false)}
+				onSubmit={fetchData}
+				apiUrl={apiUrl}
 			/>
 		</div>
 	)
